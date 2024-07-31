@@ -1,8 +1,10 @@
 const data = {
     // ... (previous data remains the same)
     monthlySales: [1269414.36, 1571645.25, 1426203.56, 1254370.28, 1224528.52, 1217129.48, 1116636.34],
-    lastYearSales: [1051431.00, 938169.57, 1084724.50, 1104984.94, 1049373.55, 1280272.47,
-                    986353.89, 1959066.15, 1740237.45, 1408890.01, 2006919.37, 1881008.72],
+    lastYearSales: [
+        1051431.00, 938169.57, 1084724.50, 1104984.94, 1049373.55, 1280272.47,
+        986353.89, 1959066.15, 1740237.45, 1408890.01, 2006919.37, 1881008.72
+    ],
     // ... (rest of the data object remains the same)
 };
 
@@ -10,14 +12,24 @@ function createSalesTrajectoryChart() {
     const ctx = document.getElementById('salesTrajectoryChart').getContext('2d');
     const actualSales = data.monthlySales;
     const lastYearSales = data.lastYearSales;
-    const targetSales = 22263432.687;
-    const averageMonthlySales = actualSales.reduce((a, b) => a + b) / actualSales.length;
+    const totalLastYear = 16491431.62;
+    const targetTotal = totalLastYear * 1.35; // 35% growth
+    const targetSales = [];
     const projectedSales = [...actualSales];
-    const targetLine = [];
 
-    for (let i = 7; i < 12; i++) {
-        projectedSales.push(averageMonthlySales);
-        targetLine.push(targetSales / 12);
+    // Calculate target sales for each month (35% growth from last year)
+    for (let i = 0; i < 12; i++) {
+        targetSales.push(lastYearSales[i] * 1.35);
+    }
+
+    // Project sales for the rest of the year
+    const remainingMonths = 12 - actualSales.length;
+    const totalActual = actualSales.reduce((a, b) => a + b, 0);
+    const remainingTarget = targetTotal - totalActual;
+    const monthlyTarget = remainingTarget / remainingMonths;
+
+    for (let i = actualSales.length; i < 12; i++) {
+        projectedSales.push(monthlyTarget);
     }
 
     new Chart(ctx, {
@@ -38,8 +50,8 @@ function createSalesTrajectoryChart() {
                     backgroundColor: data.colors.fourth
                 },
                 {
-                    label: 'Target Sales',
-                    data: Array(12).fill(targetSales / 12),
+                    label: 'Target Sales (35% Growth)',
+                    data: targetSales,
                     borderColor: data.colors.fourth,
                     backgroundColor: 'rgba(0,0,0,0)',
                     borderDash: [5, 5]
@@ -51,7 +63,7 @@ function createSalesTrajectoryChart() {
             plugins: {
                 title: {
                     display: true,
-                    text: 'Sales Trajectory vs Target'
+                    text: 'Sales Trajectory vs Target (35% YoY Growth)'
                 },
                 tooltip: {
                     callbacks: {
