@@ -1,388 +1,87 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Advexure Marketing Report: July 2024 vs June 2024</title>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.9.1/gsap.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.9.1/ScrollTrigger.min.js"></script>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            background-color: #ffffff;
-            color: #3D3D3C;
-            line-height: 1.6;
-            padding: 20px;
-        }
-        h1, h2 {
-            color: #94C43E;
-            text-align: center;
-        }
-        .logo-container {
-            text-align: center;
-            margin-bottom: 30px;
-        }
-        .logo {
-            max-width: 300px;
-        }
-        .chart-container {
-            width: 80%;
-            margin: 20px auto;
-            opacity: 0;
-            transform: translateY(50px);
-        }
-        table {
-            border-collapse: collapse;
-            width: 100%;
-            margin-bottom: 20px;
-            opacity: 0;
-            transform: translateX(-50px);
-        }
-        th, td {
-            border: 1px solid #D0E2B0;
-            padding: 8px;
-            text-align: left;
-        }
-        th {
-            background-color: #94C43E;
-            color: #ffffff;
-        }
-        tr:nth-child(even) {
-            background-color: #D0E2B0;
-        }
-        .positive {
-            color: #94C43E;
-        }
-        .negative {
-            color: red;
-        }
-    </style>
-</head>
-<body>
-    <div class="logo-container">
-        <img src="https://cdn.shopify.com/s/files/1/0007/4583/2508/files/Advexure_New_Logo.png?v=1696728948" alt="Advexure Logo" class="logo">
-    </div>
-    <h1>Advexure Marketing Report: July 2024 vs June 2024</h1>
-    
-    <h2>Key Metrics Comparison</h2>
-    <table id="metricsTable"></table>
+const data = {
+    // ... (previous data remains the same)
+    monthlySales: [1269414.36, 1571645.25, 1426203.56, 1254370.28, 1224528.52, 1217129.48, 1116636.34],
+    lastYearSales: [1051431.00, 938169.57, 1084724.50, 1104984.94, 1049373.55, 1280272.47,
+                    986353.89, 1959066.15, 1740237.45, 1408890.01, 2006919.37, 1881008.72],
+    // ... (rest of the data object remains the same)
+};
 
-    <div class="chart-container">
-        <canvas id="salesChart"></canvas>
-    </div>
+function createSalesTrajectoryChart() {
+    const ctx = document.getElementById('salesTrajectoryChart').getContext('2d');
+    const actualSales = data.monthlySales;
+    const lastYearSales = data.lastYearSales;
+    const targetSales = 22263432.687;
+    const averageMonthlySales = actualSales.reduce((a, b) => a + b) / actualSales.length;
+    const projectedSales = [...actualSales];
+    const targetLine = [];
 
-    <div class="chart-container">
-        <canvas id="socialChart"></canvas>
-    </div>
+    for (let i = 7; i < 12; i++) {
+        projectedSales.push(averageMonthlySales);
+        targetLine.push(targetSales / 12);
+    }
 
-    <div class="chart-container">
-        <canvas id="adROASChart"></canvas>
-    </div>
-
-    <div class="chart-container">
-        <canvas id="adSpendChart"></canvas>
-    </div>
-
-    <div class="chart-container">
-        <canvas id="salesTrajectoryChart"></canvas>
-    </div>
-
-    <script>
-        const data = {
-            metrics: [
-                { name: 'Total Revenue', june: 1217129.48, july: 1116636.34, format: 'currency' },
-                { name: 'eCommerce Revenue', june: 484468.66, july: 272381.12, format: 'currency' },
-                { name: 'Draft Orders', june: 718254.07, july: 831837.22, format: 'currency' },
-                { name: 'Total Leads', june: 68, july: 61, format: 'number' },
-                { name: 'LinkedIn Followers', june: 2023, july: 2112, format: 'number' },
-                { name: 'Facebook Followers', june: 5123, july: 5154, format: 'number' },
-                { name: 'Instagram Followers', june: 12499, july: 12524, format: 'number' },
-                { name: 'YouTube Subscribers', june: 306, july: 316, format: 'number' },
-                { name: 'Google Ads ROAS', june: 5.51, july: 4.38, format: 'number' },
-                { name: 'Meta Ads ROAS', june: 13.58, july: 7.07, format: 'number' },
-                { name: 'Google Ads Spend', june: 39158.26, july: 29251.21, format: 'currency' },
-                { name: 'Meta Ads Spend', june: 22714.68, july: 19022.43, format: 'currency' }
-            ],
-            monthlySales: [1269414.36, 1571645.25, 1426203.56, 1254370.28, 1224528.52, 1217129.48, 1116636.34],
-            colors: {
-                main: '#94C43E',
-                secondary: '#3D3D3C',
-                tertiary: '#D0E2B0',
-                fourth: '#71933E'
+    new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
+            datasets: [
+                {
+                    label: '2024 Actual/Projected Sales',
+                    data: projectedSales,
+                    borderColor: data.colors.main,
+                    backgroundColor: data.colors.tertiary
+                },
+                {
+                    label: '2023 Sales',
+                    data: lastYearSales,
+                    borderColor: data.colors.secondary,
+                    backgroundColor: data.colors.fourth
+                },
+                {
+                    label: 'Target Sales',
+                    data: Array(12).fill(targetSales / 12),
+                    borderColor: data.colors.fourth,
+                    backgroundColor: 'rgba(0,0,0,0)',
+                    borderDash: [5, 5]
+                }
+            ]
+        },
+        options: {
+            responsive: true,
+            plugins: {
+                title: {
+                    display: true,
+                    text: 'Sales Trajectory vs Target'
+                },
+                tooltip: {
+                    callbacks: {
+                        label: function(context) {
+                            let label = context.dataset.label || '';
+                            if (label) {
+                                label += ': ';
+                            }
+                            if (context.parsed.y !== null) {
+                                label += new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(context.parsed.y);
+                            }
+                            return label;
+                        }
+                    }
+                }
+            },
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    ticks: {
+                        callback: function(value, index, values) {
+                            return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', maximumSignificantDigits: 3 }).format(value);
+                        }
+                    }
+                }
+            },
+            animation: {
+                duration: 2000,
+                easing: 'easeInOutQuart'
             }
-        };
-
-        function calculateChange(june, july) {
-            return ((july - june) / june * 100).toFixed(2);
         }
-
-        function formatValue(value, format) {
-            if (format === 'currency') {
-                return value.toLocaleString('en-US', {style: 'currency', currency: 'USD'});
-            }
-            return value.toLocaleString('en-US');
-        }
-
-        function populateTable() {
-            const table = document.getElementById('metricsTable');
-            let html = `
-                <tr>
-                    <th>Metric</th>
-                    <th>June 2024</th>
-                    <th>July 2024</th>
-                    <th>Change</th>
-                </tr>
-            `;
-            data.metrics.forEach(metric => {
-                const change = calculateChange(metric.june, metric.july);
-                const changeClass = change >= 0 ? 'positive' : 'negative';
-                const changePrefix = change >= 0 ? '+' : '';
-                html += `
-                    <tr>
-                        <td>${metric.name}</td>
-                        <td>${formatValue(metric.june, metric.format)}</td>
-                        <td>${formatValue(metric.july, metric.format)}</td>
-                        <td class="${changeClass}">${changePrefix}${change}%</td>
-                    </tr>
-                `;
-            });
-            table.innerHTML = html;
-        }
-
-        function createSalesChart() {
-            const ctx = document.getElementById('salesChart').getContext('2d');
-            new Chart(ctx, {
-                type: 'line',
-                data: {
-                    labels: ['January', 'February', 'March', 'April', 'May', 'June', 'July'],
-                    datasets: [
-                        {
-                            label: 'Total Revenue',
-                            data: data.monthlySales,
-                            borderColor: data.colors.main,
-                            backgroundColor: data.colors.tertiary
-                        },
-                        {
-                            label: 'eCommerce Revenue',
-                            data: [419676.82, 569268.31, 483203.85, 248717.25, 343482.36, 484468.66, 272381.12],
-                            borderColor: data.colors.secondary,
-                            backgroundColor: data.colors.fourth
-                        },
-                        {
-                            label: 'Draft Orders',
-                            data: [835880.54, 1001257.94, 891748.26, 959698.05, 850073.20, 718254.07, 831837.22],
-                            borderColor: data.colors.fourth,
-                            backgroundColor: data.colors.main
-                        }
-                    ]
-                },
-                options: {
-                    responsive: true,
-                    plugins: {
-                        title: {
-                            display: true,
-                            text: 'Sales Trends'
-                        }
-                    },
-                    animation: {
-                        duration: 2000,
-                        easing: 'easeInOutQuart'
-                    }
-                }
-            });
-        }
-
-        function createSocialChart() {
-            const ctx = document.getElementById('socialChart').getContext('2d');
-            new Chart(ctx, {
-                type: 'bar',
-                data: {
-                    labels: ['LinkedIn', 'Facebook', 'Instagram', 'YouTube'],
-                    datasets: [
-                        {
-                            label: 'June 2024',
-                            data: [data.metrics[4].june, data.metrics[5].june, data.metrics[6].june, data.metrics[7].june],
-                            backgroundColor: data.colors.main
-                        },
-                        {
-                            label: 'July 2024',
-                            data: [data.metrics[4].july, data.metrics[5].july, data.metrics[6].july, data.metrics[7].july],
-                            backgroundColor: data.colors.secondary
-                        }
-                    ]
-                },
-                options: {
-                    responsive: true,
-                    plugins: {
-                        title: {
-                            display: true,
-                            text: 'Social Media Growth'
-                        }
-                    },
-                    animation: {
-                        duration: 2000,
-                        easing: 'easeInOutQuart'
-                    }
-                }
-            });
-        }
-
-        function createAdROASChart() {
-            const ctx = document.getElementById('adROASChart').getContext('2d');
-            new Chart(ctx, {
-                type: 'bar',
-                data: {
-                    labels: ['Google Ads ROAS', 'Meta Ads ROAS'],
-                    datasets: [
-                        {
-                            label: 'June 2024',
-                            data: [data.metrics[8].june, data.metrics[9].june],
-                            backgroundColor: data.colors.main
-                        },
-                        {
-                            label: 'July 2024',
-                            data: [data.metrics[8].july, data.metrics[9].july],
-                            backgroundColor: data.colors.secondary
-                        }
-                    ]
-                },
-                options: {
-                    responsive: true,
-                    plugins: {
-                        title: {
-                            display: true,
-                            text: 'Ad ROAS Performance'
-                        }
-                    },
-                    animation: {
-                        duration: 2000,
-                        easing: 'easeInOutQuart'
-                    }
-                }
-            });
-        }
-
-        function createAdSpendChart() {
-            const ctx = document.getElementById('adSpendChart').getContext('2d');
-            new Chart(ctx, {
-                type: 'bar',
-                data: {
-                    labels: ['Google Ads Spend', 'Meta Ads Spend'],
-                    datasets: [
-                        {
-                            label: 'June 2024',
-                            data: [data.metrics[10].june, data.metrics[11].june],
-                            backgroundColor: data.colors.main
-                        },
-                        {
-                            label: 'July 2024',
-                            data: [data.metrics[10].july, data.metrics[11].july],
-                            backgroundColor: data.colors.secondary
-                        }
-                    ]
-                },
-                options: {
-                    responsive: true,
-                    plugins: {
-                        title: {
-                            display: true,
-                            text: 'Ad Spend'
-                        }
-                    },
-                    animation: {
-                        duration: 2000,
-                        easing: 'easeInOutQuart'
-                    }
-                }
-            });
-        }
-
-        function createSalesTrajectoryChart() {
-            const ctx = document.getElementById('salesTrajectoryChart').getContext('2d');
-            const actualSales = data.monthlySales;
-            const targetSales = 22263432.687;
-            const averageMonthlySales = actualSales.reduce((a, b) => a + b) / actualSales.length;
-            const projectedSales = [...actualSales];
-            const targetLine = [];
-
-            for (let i = 7; i < 12; i++) {
-                projectedSales.push(averageMonthlySales);
-                targetLine.push(targetSales / 12);
-            }
-
-            new Chart(ctx, {
-                type: 'line',
-                data: {
-                    labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
-                    datasets: [
-                        {
-                            label: '2024 Actual/Projected Sales',
-                            data: projectedSales,
-                            borderColor: data.colors.main,
-                            backgroundColor: data.colors.tertiary
-                        },
-                        {
-                            label: 'Target Sales',
-                            data: Array(12).fill(targetSales / 12),
-                            borderColor: data.colors.fourth,
-                            backgroundColor: 'rgba(0,0,0,0)',
-                            borderDash: [5, 5]
-                        }
-                    ]
-                },
-                options: {
-                    responsive: true,
-                    plugins: {
-                        title: {
-                            display: true,
-                            text: 'Sales Trajectory vs Target'
-                        }
-                    },
-                    animation: {
-                        duration: 2000,
-                        easing: 'easeInOutQuart'
-                    }
-                }
-            });
-        }
-
-        window.onload = function() {
-            populateTable();
-            createSalesChart();
-            createSocialChart();
-            createAdROASChart();
-            createAdSpendChart();
-            createSalesTrajectoryChart();
-
-            gsap.registerPlugin(ScrollTrigger);
-
-            gsap.to("#metricsTable", {
-                scrollTrigger: {
-                    trigger: "#metricsTable",
-                    start: "top bottom",
-                    end: "bottom top",
-                    toggleActions: "play none none reverse"
-                },
-                opacity: 1,
-                x: 0,
-                duration: 1
-            });
-
-            gsap.utils.toArray(".chart-container").forEach(chart => {
-                gsap.to(chart, {
-                    scrollTrigger: {
-                        trigger: chart,
-                        start: "top bottom",
-                        end: "bottom top",
-                        toggleActions: "play none none reverse"
-                    },
-                    opacity: 1,
-                    y: 0,
-                    duration: 1
-                });
-            });
-        };
-    </script>
-</body>
-</html>
+    });
+}
